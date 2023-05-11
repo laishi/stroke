@@ -375,7 +375,10 @@ for i in range(len(strokeTime)):
             strokePressure[i][j] = 0
 
 
-basePath = "C://Users//laish//SurfaceStudio//Work//Blender//Sound//chalk//"
+name = 'chalk'
+name = 'bird'
+
+basePath = f"C://Users//laish//SurfaceStudio//Work//Blender//Sound//{name}//"
 file_list = os.listdir(basePath)
 start_path = [basePath+file for file in file_list if file.startswith('start')]
 middle_path = [basePath+file for file in file_list if file.startswith('middle')]
@@ -506,9 +509,22 @@ class AudioMix(GPWriting):
             lastEnd = sampleNum-realStartAudioLen
             realMiddleAudio = newRealMiddleAudio[:lastEnd]
             audioSamples = realStartAudio + realMiddleAudio + spressureSpace
+            
                     
-            for i in range(len(audioSamples)):
-                sampleAudio.append(audioSamples[i])
+#            for i in range(len(audioSamples)):
+#                sampleAudio.append(audioSamples[i])
+                
+                
+                
+            maxpressure = max(newSamplePressure)
+            for i in range(len(newSamplePressure)):
+                if newSamplePressure[i] != 0:
+#                    wavePressure = (newSamplePressure[i] - maxpressure/2) * 10
+                    wavePressure = newSamplePressure[i] * 10
+                    newPressureWave = wavePressure * audioSamples[i]
+                else:
+                    newPressureWave = 0
+                sampleAudio.append(newPressureWave)
 
         return sampleAudio
 
@@ -542,10 +558,14 @@ class AudioMix(GPWriting):
         sound_length = GPWritingSong.frame_final_duration
 
 
+state = GPWrite.state
 
-
-audioMix = AudioMix(output_file)
-
-samples = audioMix.resampleAudio(volume = 1, startVolume = 0.9, middleVolume=0.2)
-audioMix.saveWav(samples, output_file)
-audioMix.createSequences(output_file)
+if not state:
+    audioMix = AudioMix(output_file)
+    samples = audioMix.resampleAudio(volume = 1, startVolume = 0.9, middleVolume=0.1)
+    audioMix.saveWav(samples, output_file)
+    audioMix.createSequences(output_file)
+    
+    
+#频率（Frequency）控制了音调  stroke pressure
+#振幅（Amplitude）控制了音量  stroke length
